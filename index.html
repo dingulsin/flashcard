@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>플래시 카드</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* 스크롤 방지 */
+        }
+
+        .title {
+            font-size: 1.05em; /* 제목 크기를 1.5배로 확대 */
+            text-align: center;
+            margin-bottom: 30px; /* 제목과 카드 사이 간격 조정 */
+        }
+
+        .title a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .card {
+            width: 90%;
+            max-width: 400px;
+            height: 300px;
+            perspective: 1000px;
+            position: relative;
+            margin: 20px 0; /* 카드와 버튼, 카드 사이 간격 조정 */
+            display: none;
+        }
+
+        .card__face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4em;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.6s;
+            background-color: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card__face--front {
+            background-color: #e6c27b;
+        }
+
+        .card__face--back {
+            background-color: #c4d8d2;
+            transform: rotateY(180deg);
+        }
+
+        .card.is-flipped .card__face--front {
+            transform: rotateY(180deg);
+        }
+
+        .card.is-flipped .card__face--back {
+            transform: rotateY(0deg);
+        }
+
+        .speaker-icon {
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 1.4em;
+        }
+
+        .logo {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.98em;
+        }
+
+        .text-line {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .next-button {
+            margin-top: 20px; /* 버튼과 카드 사이 간격 조정 */
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .next-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 상단 제목 및 링크 -->
+    <h1 class="title">
+        <a href="https://youtu.be/jtU9r8FQGd4" target="_blank">
+            뒹굴신 1000문장 1탄<br>👉유튜브 바로가기
+        </a>
+    </h1>
+
+    <div class="container" id="card-container">
+        <!-- 카드가 여기에 동적으로 추가됩니다 -->
+    </div>
+    <button class="next-button" id="nextCardButton">다음 카드</button>
+
+    <script>
+        const cardData = [
+            {
+                number: 531,
+                frontText: "적당선에서 나랑<br>타협해.",
+                backText: "Meet me halfway.",
+                audioSrc: "https://blog.kakaocdn.net/dn/d9NbDI/btsJyFxiwZN/pizwRB19AMtlhMgIPPK0k1/tfile.mp4"
+            },
+            
+            {
+                number: 532,
+                frontText: "그냥 한 번 더<br>확인하는 거야.",
+                backText: "I'm just double-checking.",
+                audioSrc: "https://blog.kakaocdn.net/dn/3Hno0/btsJxxUtuY2/uiguKsBUjrDkaKu0ygtZmk/tfile.mp4"
+            },
+            {
+                number: 533,
+                frontText: "나한테 뭘<br>원하는 거야?",
+                backText: "What do you want from me?",
+                audioSrc: "https://blog.kakaocdn.net/dn/bzxTLj/btsJy4pX2OO/PtbQgYKbKKKtsxCw8M8Jj0/tfile.mp4"
+            },
+            {
+                number: 534,
+                frontText: "내가 명확히<br>정리를 해볼게.",
+                backText: "Let me get this straight.",
+                audioSrc: "https://blog.kakaocdn.net/dn/zDa1W/btsJxBoRrFu/1LZvCjlbgk7e73281je4Y1/tfile.mp4"
+            },
+            {
+                number: 535,
+                frontText: "나한테<br>가까이 있어.",
+                backText: "Stay close to me.",
+                audioSrc: "https://blog.kakaocdn.net/dn/uVDOL/btsJyt4WwZJ/H9pK7kRPNBRc2afRoPWm1k/tfile.mp4"
+            },
+            {
+                number: 536,
+                frontText: "기대하진<br>마.",
+                backText: "Don't count on it.",
+                audioSrc: "https://blog.kakaocdn.net/dn/Np3FM/btsJy2r86LG/sWlT0loNQnmOGmaA9HahZ1/tfile.mp4"
+            },
+            {
+                number: 537,
+                frontText: "네가 원하는<br>뭐든 될 수 있어.",
+                backText: "You can be whatever you want to be.",
+                audioSrc: "https://blog.kakaocdn.net/dn/ctGTOQ/btsJyF48r31/BJggVMpKvQ9Zhf7XEMYBs0/tfile.mp4"
+            },
+            {
+                number: 538,
+                frontText: "그걸 계속<br>움직여, 진행시켜.",
+                backText: "Keep it moving.",
+                audioSrc: "https://blog.kakaocdn.net/dn/0bP7H/btsJxWzFgIL/bWmpsXnsMbIqrvq5F50XA0/tfile.mp4"
+            },
+            {
+                number: 539,
+                frontText: "어젯밤에<br>뭐 했어?",
+                backText: "What'd you do last night?",
+                audioSrc: "https://blog.kakaocdn.net/dn/b6xiei/btsJysLInA9/wupYEaPkYui9HH1ATg63A1/tfile.mp4"
+            },
+            {
+                number: 540,
+                frontText: "인상적인걸,<br>감동이야.",
+                backText: "I'm impressed.",
+                audioSrc: "https://blog.kakaocdn.net/dn/cUX38J/btsJyez6avT/gE9fVf5lwvJyBv9ihDADTk/tfile.mp4"
+            }
+            // 나머지 카드 데이터도 여기에 추가
+        ];
+
+        let shuffledCards = [];
+        let currentCardIndex = 0;
+
+        // 카드를 무작위로 섞는 함수
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 현재 카드만 동적으로 로딩하는 함수
+        function loadCard(data) {
+            const cardContainer = document.getElementById('card-container');
+            cardContainer.innerHTML = ''; // 이전 카드 지우기
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.display = 'block'; // 카드 보이기
+
+            card.innerHTML = `
+                <div class="card__face card__face--front">
+                    <div class="card-number">${data.number}</div>
+                    ${data.frontText.split('<br>').map(line => `<span class="text-line">${line}</span>`).join('')}
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbqWKHV%2FbtsIxkWWSCQ%2FH5ebr5KfDdnjvtA7y43if0%2Fimg.png" class="logo" alt="로고">
+                </div>
+                <div class="card__face card__face--back">
+                    <div class="card-number">${data.number}</div>
+                    ${data.backText}
+                    <div class="speaker-icon">🎧</div>
+                    <audio id="audio" src="${data.audioSrc}"></audio>
+                    <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbqWKHV%2FbtsIxkWWSCQ%2FH5ebr5KfDdnjvtA7y43if0%2Fimg.png" class="logo" alt="로고">
+                </div>
+            `;
+
+            cardContainer.appendChild(card);
+
+            // 카드 클릭 이벤트: 뒤집기
+            card.addEventListener('click', function() {
+                card.classList.toggle('is-flipped');
+            });
+
+            // 스피커 아이콘 클릭 이벤트: 오디오 재생
+            const speakerIcon = card.querySelector('.speaker-icon');
+            speakerIcon.addEventListener('click', function(event) {
+                event.stopPropagation(); // 카드 뒤집기 방지
+                const audio = card.querySelector('audio');
+                audio.play();
+            });
+        }
+
+        function showRandomCard() {
+            if (currentCardIndex >= shuffledCards.length) {
+                alert("모든 카드를 다 보셨습니다!");
+                return;
+            }
+
+            const nextCardData = cardData[shuffledCards[currentCardIndex]];
+            loadCard(nextCardData);
+            currentCardIndex++;
+        }
+
+        document.getElementById('nextCardButton').addEventListener('click', showRandomCard);
+
+        // 카드 섞기 및 첫 번째 카드 로딩
+        shuffledCards = shuffle([...Array(cardData.length).keys()]); // 카드 인덱스를 섞음
+        showRandomCard(); // 첫 번째 카드 표시
+    </script>
+
+</body>
+</html>
